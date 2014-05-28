@@ -10,11 +10,9 @@ cs111-project-4
 READ UP ON DIS SHIT
 + VFS
     + Full Document: www.minix3.org/doc/gerofi_thesis.pdf
-    + README: www.users.sosdg.org/~qiyong/mxr/source/servers/vfs/README
-    + Messaging: www.users.sosdg.org/~qiyong/mxr/source/servers/mfs/main.c#L193
+    + README: http://users.sosdg.org/~qiyong/mxr/source/servers/vfs/README
+    + Messaging: http://users.sosdg.org/~qiyong/mxr/source/include/minix/vfsif.h
 + Syscall
 	+ www.cis.syr.edu/~wedu/seed/Labs/Documentation/Minix3/How_to_add_system_call.pdf
 + Inode
 	+ cis.syr.edu/~wedu/seed/Labs/Documentation/Minix3/Inode.pdf
-
-
