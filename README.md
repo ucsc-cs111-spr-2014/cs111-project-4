@@ -6,3 +6,8 @@ cs111-project-4
 + Make library functions for the syscalls
 + Test program
 + command line utility
+===============
+READ UP ON DIS SHIT
++ VFS
+    + Full Document: http://www.minix3.org/doc/gerofi_thesis.pdf
+    + README: /usr/src/servers/vfs/README
