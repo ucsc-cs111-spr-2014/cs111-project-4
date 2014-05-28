@@ -11,3 +11,4 @@ READ UP ON DIS SHIT
 + VFS
     + Full Document: http://www.minix3.org/doc/gerofi_thesis.pdf
     + README: /usr/src/servers/vfs/README
+    + VFS messages: /usr/include/minix/vfsif.h
