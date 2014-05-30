@@ -18,3 +18,21 @@ READ UP ON DIS SHIT
 	+ http://cise.ufl.edu/class/cop4600sp14/Minix-Syscall_Tutorialv2.pdf
 + Inode
 	+ cis.syr.edu/~wedu/seed/Labs/Documentation/Minix3/Inode.pdf
+==================================
+
++ create new message type in vfsif.h
+    - basically same fields as read() and write() message (mess_6)
+        ~ file pointer
+        ~ memory pointer
+        ~ count
+
++ VFS syscall handler
+    - use file descriptor arg to find vnode
+    - pass message (our new type) to MFS
+
++ MFS handler
+    - stickybit for "is metadata present"
+    - convert vnode to inode
+    - allocate zone 9 if neccessary.
+    - find/allocate block, store metadata
+    - store block number
