@@ -17,7 +17,7 @@ READ UP ON DIS SHIT
 	+ www.cis.syr.edu/~wedu/seed/Labs/Documentation/Minix3/How_to_add_system_call.pdf
 	+ http://cise.ufl.edu/class/cop4600sp14/Minix-Syscall_Tutorialv2.pdf
 + Inode
-	+ cis.syr.edu/~wedu/seed/Labs/Documentation/Minix3/Inode.pdf
+	+ www.cis.syr.edu/~wedu/seed/Labs/Documentation/Minix3/Inode.pdf
 
 ==================================
 
