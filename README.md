@@ -18,6 +18,7 @@ READ UP ON DIS SHIT
 	+ http://cise.ufl.edu/class/cop4600sp14/Minix-Syscall_Tutorialv2.pdf
 + Inode
 	+ cis.syr.edu/~wedu/seed/Labs/Documentation/Minix3/Inode.pdf
+
 ==================================
 
 + create new message type in vfsif.h
