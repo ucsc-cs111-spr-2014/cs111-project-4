@@ -23,9 +23,9 @@ READ UP ON DIS SHIT
 
 + create new message type in vfsif.h
     - basically same fields as read() and write() message (mess_6)
-        ~ file pointer
-        ~ memory pointer
-        ~ count
+        - file pointer
+        - memory pointer
+        - count
 
 + VFS syscall handler
     - use file descriptor arg to find vnode
