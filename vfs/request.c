@@ -29,7 +29,61 @@ FORWARD _PROTOTYPE(int fs_sendrec_f, (char *file, int line, endpoint_t fs_e,
 
 #define fs_sendrec(e, m) fs_sendrec_f(__FILE__, __LINE__, (e), (m))
 
+/*===========================================================================*
+ *                      req_metarw                                           *
+ *===========================================================================*/
+PUBLIC int req_metarw(
+  endpoint_t fs_e,
+  ino_t inode_nr,
+  u64_t pos,
+  int rw_flag,
+  endpoint_t user_e,
+  char *user_addr,
+  unsigned int num_of_bytes,
+  u64_t *new_posp,
+  unsigned int *cum_iop
+)
+{
+  printf("%s\n", "Now running req_metarw()");
 
+  int r;
+  cp_grant_id_t grant_id;
+  message m;
+
+  printf("%s\n", "req_metarw(): before cpf_grant_magic()");
+
+  grant_id = cpf_grant_magic(fs_e, user_e, (vir_bytes) user_addr, num_of_bytes,
+                        (rw_flag == READING ? CPF_WRITE : CPF_READ));
+  if(grant_id == -1)
+          panic("req_metarw: cpf_grant_magic failed");
+
+  printf("req_metarw(): after cpf_grant_magic()\n");
+
+  /* Fill in request message */
+  m.m_type = rw_flag == READING ? REQ_READ : REQ_WRITE;
+  m.REQ_INODE_NR = inode_nr;
+  m.REQ_GRANT = grant_id;
+  m.REQ_SEEK_POS_LO = ex64lo(pos);
+  m.REQ_SEEK_POS_HI = 0;        /* Not used for now, so clear it. */
+  m.REQ_NBYTES = num_of_bytes;
+
+  printf("req_metarw(): before send/rec request\n");
+
+  /* Send/rec request */
+  r = fs_sendrec(fs_e, &m);
+  cpf_revoke(grant_id);
+
+  printf("req_metarw(): after send/rec request\n");
+
+  if (r == OK) {
+        /* Fill in response structure */
+        *new_posp = cvul64(m.RES_SEEK_POS_LO);
+        *cum_iop = m.RES_NBYTES;
+  }
+
+  return(r);
+}  
+  
 /*===========================================================================*
  *			req_breadwrite					     *
  *===========================================================================*/
