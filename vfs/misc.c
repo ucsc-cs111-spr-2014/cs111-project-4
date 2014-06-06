@@ -55,10 +55,26 @@ FORWARD _PROTOTYPE( int write_seg, (struct inode *rip, off_t off, int proc_e,
 
 #define FP_EXITING	1
 
-int do_printbitch()
+int do_metarw()
 {
-	printf("BITCHBITCHBITCHBITCH\n");
-	return OK;
+  int is_read; size_t size;
+  char *filename;
+  char *metadata;
+
+  /*open up message*/
+  is_read = m_in.m1_i1;
+  filename = m_in.m1_p1;
+
+  /*do read, or write, based on is_read*/
+  if (is_read) {
+    
+  } else {
+    metadata = m_in.m1_p2;
+    size = m_in.m1_i2;
+    
+  }
+
+  return OK;
 }
 
 
