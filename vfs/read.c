@@ -30,38 +30,25 @@
  *===========================================================================*/
 PUBLIC int do_metarw()
 {
-  int is_read; size_t size;
-  char *filename; FILE *file;
+  int is_read; 
+  size_t size;
   char *metadata;
-  printf("<<<<<<<<<< do_metaread\n");
+  printf("<<< do_metaread\n");
 
   /*open up message*/
-  printf("do_metaread :: setting is_read\n");
   is_read = m_in.m1_i1;
-  printf("do_metaread :: setting filename\n");
-  filename = m_in.m1_p1;
-  printf("filename:%s\n", filename); 
-  /*do read, or write, based on is_read*/
+  m_in.fd = m_in.m1_i3;
+
   if (is_read) {
-    printf("in is_read\n");
-    file = fopen(filename, "r");
-    printf("file opened:%p\n", file);
-    assert(file != NULL);
-    m_in.fd = fileno(file);
-    printf("is_read calling meta_read_write\n");
+    printf("meta_read_write\n");
     return(meta_read_write(READING)); 
   } else {
     metadata = m_in.m1_p2;
     size = m_in.m1_i2;
-
-    file = fopen(filename, "r");
-    assert(file != NULL);
-    m_in.fd = fileno(file);
-    printf("NOT is_read calling meta_read_write\n");
+    printf("meta_read_write\n");
     return(meta_read_write(WRITING));
   }
   
-  printf(">>>>>>>>>> do_metaread\n");
   return OK;
 }
 
@@ -79,7 +66,7 @@ int rw_flag;                    /* READING or WRITING */
   int op, oflags, r, block_spec, char_spec;
   int regular;
   mode_t mode_word;
-  printf("<<<<<<<<<< meta_read_write\n");
+  printf("<<< meta_read_write\n");
 
   /* If the file descriptor is valid, get the vnode, size and mode. */
   if (m_in.nbytes < 0) return(EINVAL);
@@ -178,7 +165,7 @@ int rw_flag;                    /* READING or WRITING */
         }
   }
   
-  printf(">>>>>>>>> do_metaread\n");
+  printf(">>> do_metaread\n");
   f->filp_pos = position;
   if (r == OK) return(cum_io);
   return(r);

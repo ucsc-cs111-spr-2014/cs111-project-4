@@ -11,8 +11,7 @@ int main(int argc, char *argv[])
 	message m;
 
 	m.m1_i1 = 1; /*contains flag (isRead) for read or write*/
-	m.m1_p1 = argv[1]; /*contains filename*/
-	printf("file: %s\n", m.m1_p1);
+	m.m1_i3 = fileno(fopen(argv[1], "r")); /*contains filename*/
 
 	ret = _syscall(VFS_PROC_NR, 69, &m);
 	printf("ret: %d\n", ret);
