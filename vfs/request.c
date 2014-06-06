@@ -44,11 +44,12 @@ PUBLIC int req_metarw(
   unsigned int *cum_iop
 )
 {
-  printf("%s\n", "Now running req_metarw()");
 
   int r;
   cp_grant_id_t grant_id;
   message m;
+
+  printf("%s\n", "Now running req_metarw()");
 
   printf("%s\n", "req_metarw(): before cpf_grant_magic()");
 

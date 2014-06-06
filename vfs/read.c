@@ -23,6 +23,7 @@
 #include <minix/vfsif.h>
 #include "vnode.h"
 #include "vmnt.h"
+#include <stdio.h>
 
 /*===========================================================================*
  *                              do_metaread                                  *
@@ -30,8 +31,9 @@
 PUBLIC int do_metarw()
 {
   int is_read; size_t size;
-  char *filename;
+  char *filename; FILE *file;
   char *metadata;
+
 
   /*open up message*/
   is_read = m_in.m1_i1;
@@ -39,11 +41,17 @@ PUBLIC int do_metarw()
 
   /*do read, or write, based on is_read*/
   if (is_read) {
-    
+    file = fopen(filename, "r");
+    assert(file != NULL);
+    m_in.fd = fileno(file);
     return(meta_read_write(READING)); 
   } else {
     metadata = m_in.m1_p2;
     size = m_in.m1_i2;
+
+    file = fopen(filename, "r");
+    assert(file != NULL);
+    m_in.fd = fileno(file);
     return(meta_read_write(WRITING));
   }
 
@@ -128,8 +136,9 @@ int rw_flag;                    /* READING or WRITING */
                 if (oflags & O_APPEND) position = cvul64(vp->v_size);
         }
 
+        printf("%s\n", "meta_read_write::before req_metarw");
 	/* Issue request */
-        r = req_readwrite(vp->v_fs_e, vp->v_inode_nr, position, rw_flag, who_e,
+        r = req_metarw(vp->v_fs_e, vp->v_inode_nr, position, rw_flag, who_e,
                           m_in.buffer, m_in.nbytes, &new_pos, &cum_io_incr);
 
         if (r >= 0) {
