@@ -52,6 +52,7 @@ _PROTOTYPE( int truncate_inode, (struct inode *rip, off_t len)		);
 /* misc.c */
 _PROTOTYPE( int fs_flush, (void)					);
 _PROTOTYPE( int fs_sync, (void)						);
+_PROTOTYPE( int fs_metarw, (void)					); /* CMPS111 */
 
 /* mount.c */
 _PROTOTYPE( int fs_mountpoint, (void)					);
