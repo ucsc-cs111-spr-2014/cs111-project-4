@@ -26,24 +26,29 @@
 #include <stdio.h>
 
 /*===========================================================================*
- *                              do_metaread                                  *
+ *                              do_metarw                                    *
  *===========================================================================*/
 PUBLIC int do_metarw()
 {
   int is_read; size_t size;
   char *filename; FILE *file;
   char *metadata;
-
+  printf("<<<<<<<<<< do_metaread\n");
 
   /*open up message*/
+  printf("do_metaread :: setting is_read\n");
   is_read = m_in.m1_i1;
+  printf("do_metaread :: setting filename\n");
   filename = m_in.m1_p1;
-
+  printf("filename:%s\n", filename); 
   /*do read, or write, based on is_read*/
   if (is_read) {
+    printf("in is_read\n");
     file = fopen(filename, "r");
+    printf("file opened:%p\n", file);
     assert(file != NULL);
     m_in.fd = fileno(file);
+    printf("is_read calling meta_read_write\n");
     return(meta_read_write(READING)); 
   } else {
     metadata = m_in.m1_p2;
@@ -52,9 +57,11 @@ PUBLIC int do_metarw()
     file = fopen(filename, "r");
     assert(file != NULL);
     m_in.fd = fileno(file);
+    printf("NOT is_read calling meta_read_write\n");
     return(meta_read_write(WRITING));
   }
-
+  
+  printf(">>>>>>>>>> do_metaread\n");
   return OK;
 }
 
@@ -72,6 +79,7 @@ int rw_flag;                    /* READING or WRITING */
   int op, oflags, r, block_spec, char_spec;
   int regular;
   mode_t mode_word;
+  printf("<<<<<<<<<< meta_read_write\n");
 
   /* If the file descriptor is valid, get the vnode, size and mode. */
   if (m_in.nbytes < 0) return(EINVAL);
@@ -89,8 +97,9 @@ int rw_flag;                    /* READING or WRITING */
   cum_io = 0;
 
   if (vp->v_pipe == I_PIPE) {
+        printf("v_pipe == I_PIPE\n");
         if (fp->fp_cum_io_partial != 0) {
-                panic("read_write: fp_cum_io_partial not clear");
+                panic("meta_read_write: fp_cum_io_partial not clear");
         }
        	return rw_pipe(rw_flag, who_e, m_in.fd, f, m_in.buffer, m_in.nbytes);
   }
@@ -100,19 +109,22 @@ int rw_flag;                    /* READING or WRITING */
   regular = mode_word == I_REGULAR;
 
   if ((char_spec = (mode_word == I_CHAR_SPECIAL ? 1 : 0))) {
+        printf("char_spec\n");
         if (vp->v_sdev == NO_DEV)
-                panic("read_write tries to read from character device NO_DEV");
+                panic("meta_read_write tries to read from character device NO_DEV");
   }
 
    if ((block_spec = (mode_word == I_BLOCK_SPECIAL ? 1 : 0))) {
+        printf("block_spec\n");
         if (vp->v_sdev == NO_DEV)
-                panic("read_write tries to read from block device NO_DEV");
+                panic("meta_read_write tries to read from block device NO_DEV");
   }
 
   if (char_spec) {                      /* Character special files. */
         dev_t dev;
         int suspend_reopen;
 
+        printf("character special file\n");
         suspend_reopen = (f->filp_state != FS_NORMAL);
         dev = (dev_t) vp->v_sdev;
 
@@ -124,6 +136,7 @@ int rw_flag;                    /* READING or WRITING */
                 r = OK;
         }
   } else if (block_spec) {              /* Block special files. */
+        printf("block special file\n");
         r = req_breadwrite(vp->v_bfs_e, who_e, vp->v_sdev, position,
                 m_in.nbytes, m_in.buffer, rw_flag, &res_pos, &res_cum_io);
         if (r == OK) {
@@ -131,19 +144,22 @@ int rw_flag;                    /* READING or WRITING */
                 cum_io += res_cum_io;
         } 
   } else {                              /* Regular files */
+        printf("regular file\n");
         if (rw_flag == WRITING && block_spec == 0) {
                 /* Check for O_APPEND flag. */
                 if (oflags & O_APPEND) position = cvul64(vp->v_size);
         }
 
-        printf("%s\n", "meta_read_write::before req_metarw");
+        printf("");
 	/* Issue request */
+        printf("issuing request\n");
         r = req_metarw(vp->v_fs_e, vp->v_inode_nr, position, rw_flag, who_e,
                           m_in.buffer, m_in.nbytes, &new_pos, &cum_io_incr);
+        printf("request issued\n");
 
         if (r >= 0) {
                 if (ex64hi(new_pos))
-                        panic("read_write: bad new pos");
+                        panic("meta_read_write: bad new pos");
 
                 position = new_pos;
                 cum_io += cum_io_incr;
@@ -161,7 +177,8 @@ int rw_flag;                    /* READING or WRITING */
                 }
         }
   }
-
+  
+  printf(">>>>>>>>> do_metaread\n");
   f->filp_pos = position;
   if (r == OK) return(cum_io);
   return(r);
