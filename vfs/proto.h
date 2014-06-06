@@ -13,7 +13,7 @@ struct vnode;
 typedef struct filp * filp_id_t;
 
 /* device.c */
-_PROTOTYPE( int do_printbitch, (void) 							); /* CMPS111 */
+_PROTOTYPE( int do_metarw, (void) 					); /* CMPS111 */
 _PROTOTYPE( int dev_open, (dev_t dev, int proc, int flags)		);
 _PROTOTYPE( int dev_reopen, (dev_t dev, int filp_no, int flags)		);
 _PROTOTYPE( int dev_close, (dev_t dev, int filp_no)			);
