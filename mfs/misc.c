@@ -3,6 +3,8 @@
 #include <minix/vfsif.h>
 #include "inode.h"
 #include "super.h"
+#include <sys/stat.h>
+#include "buf.h"
 
 /*===========================================================================*
  *                              fs_metarw                                    *
@@ -14,12 +16,6 @@ PUBLIC int fs_metarw()
   short scale;
   zone_t b;
   struct buf *bp;
-  /*  m.m_type = rw_flag == READING ? REQ_READ : REQ_WRITE;
-  m.REQ_INODE_NR = inode_nr;
-  m.REQ_GRANT = grant_id;
-  m.REQ_SEEK_POS_LO = ex64lo(pos);
-  m.REQ_SEEK_POS_HI = 0;
-  m.REQ_NBYTES = num_of_bytes; */
 
   printf("%s\n", "fs_metarw");
 
@@ -31,11 +27,20 @@ PUBLIC int fs_metarw()
     b = (block_t) rip->i_zone[9] << scale;
     bp = get_block(rip->i_dev, b, NORMAL);
     zero_block(bp);
+    rip->i_mode |= S_ISVTX;
     printf("%s\n", "zone allocated");
   } else {
     printf("%s\n", "loading zone[9]");
     b = (block_t) rip->i_zone[9] << scale;
     bp = get_block(rip->i_dev, b, NORMAL);
+  }
+
+  printf("is_read?%d\n", fs_m_in.m_type);
+  if (fs_m_in.m_type/*is_read*/) {
+    printf("!%s\n", bp->b_data);
+  } else {
+    /* use strncpy once buffer and size_t are passed */
+    strcpy(bp->b_data, "DICKS");
   }
 
   return OK;
