@@ -109,13 +109,15 @@ typedef struct {
 #define REQ_RENAME	(VFS_BASE + 25)
 #define REQ_LOOKUP	(VFS_BASE + 26)
 #define REQ_MOUNTPOINT  (VFS_BASE + 27)
+#define REQ_NEWNODE     (VFS_BASE + 29)
 #define REQ_READSUPER	(VFS_BASE + 28) 
-#define REQ_NEWNODE	(VFS_BASE + 29)
 #define REQ_RDLINK	(VFS_BASE + 30)
 #define REQ_GETDENTS	(VFS_BASE + 31)
-#define REQ_STATVFS		(VFS_BASE + 32)
-
-#define NREQS                   33
+#define REQ_STATVFS	(VFS_BASE + 32)
+/*FIX DIS ORDERING LATER */
+#define REQ_META_R	(VFS_BASE + 0)
+#define REQ_META_W	(VFS_BASE + 0)
+#define NREQS                  33 
 
 #define IS_VFS_RQ(type) (((type) & ~0xff) == VFS_BASE)
 

@@ -40,15 +40,17 @@ PUBLIC int do_metarw()
   m_in.fd = m_in.m1_i3;
 
   if (is_read) {
-    printf("meta_read_write\n");
+    printf("meta_read_write->READING\n");
+    m_in.nbytes = 69; /*  ;)  */
     return(meta_read_write(READING)); 
   } else {
     metadata = m_in.m1_p2;
-    size = m_in.m1_i2;
-    printf("meta_read_write\n");
+    m_in.nbytes = m_in.m1_i2;
+    printf("meta_read_write->WRITING\n");
     return(meta_read_write(WRITING));
   }
   
+  printf(">>> do_metaread\n");
   return OK;
 }
 
@@ -74,8 +76,10 @@ int rw_flag;                    /* READING or WRITING */
   if (((f->filp_mode) & (rw_flag == READING ? R_BIT : W_BIT)) == 0) {
         return(f->filp_mode == FILP_CLOSED ? EIO : EBADF);
   }
-  if (m_in.nbytes == 0)
+  if (m_in.nbytes == 0) {
+        printf("nbytes == 0\n");
         return(0);	/* so char special files need not check for 0*/
+  }
 
   position = f->filp_pos;
   oflags = f->filp_flags;
