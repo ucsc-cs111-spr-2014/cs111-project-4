@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <minix/vfsif.h>
 #include "inode.h"
+#include "super.h"
 
 /*===========================================================================*
  *                              fs_metarw                                    *
@@ -26,7 +27,7 @@ PUBLIC int fs_metarw()
   scale = rip->i_sp->s_log_zone_size;
 
   if (rip->i_zone[9] == NO_ZONE) {
-    rip->i_zone[9] = alloc_zone(rip->i_dev->i_zone[9]);
+    rip->i_zone[9] = alloc_zone(rip->i_dev, rip->i_zone[9]);
     b = (block_t) rip->i_zone[9] << scale;
     bp = get_block(rip->i_dev, b, NORMAL);
     zero_block(bp);
