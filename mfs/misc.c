@@ -3,6 +3,10 @@
 #include <minix/vfsif.h>
 #include "inode.h"
 
+/*===========================================================================*
+ *                              fs_metarw                                    *
+ *===========================================================================*/
+
 PUBLIC int fs_metarw()
 {
   struct inode *rip;
@@ -13,7 +17,7 @@ PUBLIC int fs_metarw()
   m.REQ_SEEK_POS_HI = 0;
   m.REQ_NBYTES = num_of_bytes; */
 
-  printf("%s\n", fs_metarw);
+  printf("%s\n", "fs_metarw");
   rip = find_inode(fs_dev, fs_m_in.REQ_INODE_NR);
 
   return OK;

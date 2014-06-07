@@ -61,7 +61,7 @@ PUBLIC int req_metarw(
   printf("req_metarw(): after cpf_grant_magic()\n");
 
   /* Fill in request message */
-  m.m_type = rw_flag == READING ? REQ_READ : REQ_WRITE;
+  m.m_type = rw_flag == READING ? REQ_META_R : REQ_META_W;
   m.REQ_INODE_NR = inode_nr;
   m.REQ_GRANT = grant_id;
   m.REQ_SEEK_POS_LO = ex64lo(pos);
