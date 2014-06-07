@@ -13,6 +13,7 @@ READ UP ON DIS SHIT
     + Full Document: www.minix3.org/doc/gerofi_thesis.pdf
     + README: http://users.sosdg.org/~qiyong/mxr/source/servers/vfs/README
     + Messaging: http://users.sosdg.org/~qiyong/mxr/source/include/minix/vfsif.h
+    + http://users.sosdg.org/~qiyong/mxr/source/servers/vfs/param.h#L9
 + Syscall
 	+ www.cis.syr.edu/~wedu/seed/Labs/Documentation/Minix3/How_to_add_system_call.pdf
 	+ http://cise.ufl.edu/class/cop4600sp14/Minix-Syscall_Tutorialv2.pdf
