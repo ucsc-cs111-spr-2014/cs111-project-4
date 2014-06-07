@@ -11,8 +11,7 @@ int main(int argc, char *argv[])
 	int ret;
 	
 	m.m1_i1 = 0;/*contains flag (isRead) for read or write*/
-	m.m1_p1 = argv[1]; /*contains filename*/
-	printf("file: %s\n", m.m1_p1);
+	m.m1_i3 = fileno(fopen(argv[1], "r+")); /*contains filename*/
 
 	m.m1_p2 = argv[2]; /*contains text, ie metadata to write*/
 	m.m1_i2 = sizeof(argv[2]);

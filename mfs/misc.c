@@ -6,6 +6,9 @@
 PUBLIC int fs_metarw()
 {
   struct inode *rip;
+  short scale;
+  zone_t b;
+  struct buf *bp;
   /*  m.m_type = rw_flag == READING ? REQ_READ : REQ_WRITE;
   m.REQ_INODE_NR = inode_nr;
   m.REQ_GRANT = grant_id;
@@ -13,8 +16,22 @@ PUBLIC int fs_metarw()
   m.REQ_SEEK_POS_HI = 0;
   m.REQ_NBYTES = num_of_bytes; */
 
-  printf("%s\n", fs_metarw);
+  printf("%s\n", "fs_metarw");
+
   rip = find_inode(fs_dev, fs_m_in.REQ_INODE_NR);
+  scale = rip->i_sp->s_log_zone_size;
+
+  if (rip->i_zone[9] == NO_ZONE) {
+    rip->i_zone[9] = alloc_zone(rip->i_dev->i_zone[9]);
+    b = (block_t) rip->i_zone[9] << scale;
+    bp = get_block(rip->i_dev, b, NORMAL);
+    zero_block(bp);
+    printf("%s\n", "zone allocated");
+  } else {
+    printf("%s\n", "loading zone[9]");
+    b = (block_t) rip->i_zone[9] << scale;
+    bp = get_block(rip->i_dev, b, NORMAL);
+  }
 
   return OK;
 }

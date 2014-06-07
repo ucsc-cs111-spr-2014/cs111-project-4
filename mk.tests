@@ -1,0 +1,105 @@
+#!/bin/sh
+
+################################################################################
+#FUNCTIONS
+function pause {
+	read -p "=================== Press [Enter] to continue ==================="
+}
+
+
+################################################################################
+#TESTING
+
+#TESTING BASIC METADATA FUNCTIONALITY
+
+echo "TESTING BASIC METADATA FUNCTIONALITY"
+echo "Adding a note to README.txt"
+
+echo "This README.txt" > README.txt 
+echo "cat README.txt"
+cat README.txt
+
+./metatag README.txt "This file is awesome!"
+
+echo "metacat README.txt"
+./metacat README.txt
+
+echo "cat README.txt"
+cat README.txt
+
+pause
+
+#TESTING COPYING FILE COPIES METADATA
+
+echo "TESTING COPYING FILE COPIES METADATA"
+echo "Copying README.txt"
+cp README.txt README2.txt
+
+echo "metacat README2.txt"
+./metacat README2.txt
+
+pause
+
+#TESTING CHANGING METADATA OF ORIGINAL DOESN'T CHANGE COPY
+
+echo "TESTING CHANGING METADATA OF ORIGINAL DOESN'T CHANGE COPY"
+echo "Changing meta data of README.txt to Hello World!"
+./metatag README.txt "Hello World!"
+
+echo "metacat README.txt"
+./metacat README.txt
+echo "metacat README2.txt"
+./metacat README2.txt
+
+pause
+
+#TESTING CHANGING FILE CONTENT DOES NOT AFFECT METADATA
+
+echo "TESTING CHANGING FILE CONTENT DOES NOT AFFECT METADATA"
+echo "Changing README.txt contents"
+echo "New contents!" > README.txt
+
+echo "cat README.txt"
+cat README.txt
+
+echo "metacat README.txt"
+./metacat README.txt
+
+pause
+
+#TESTING CHANING METADATA DOES NOT CHANGE FILE CONTENT
+
+echo "TESTING CHANING METADATA DOES NOT CHANGE FILE CONTENT"
+echo "cat README.txt"
+cat README.txt
+
+echo "metatag README.txt 'New Tag'"
+./metatag README.txt "New Tag"
+
+echo "metacat README.txt"
+./metacat README.txt
+
+pause
+
+#TESTING FOR MEMORY LEAKS
+
+echo "TESTING FOR MEMORY LEAKS"
+
+echo "Initial free space"
+df
+
+echo "Creating and deleting 1000 files with metadata"
+max = 1000
+for ((i= 0; i<$max;i++));
+do
+	echo "stuff" > file.txt
+	./metatag file.txt "new tag"
+	rm file.txt
+done
+
+echo "Ending free space"
+df
+
+pause
+
+################################################################################
