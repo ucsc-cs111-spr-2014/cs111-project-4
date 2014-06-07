@@ -114,7 +114,6 @@ typedef struct {
 #define REQ_RDLINK	(VFS_BASE + 30)
 #define REQ_GETDENTS	(VFS_BASE + 31)
 #define REQ_STATVFS	(VFS_BASE + 32)
-/*FIX DIS ORDERING LATER */
 #define REQ_META_R	(VFS_BASE + 33)
 #define REQ_META_W	(VFS_BASE + 34)
 #define NREQS                  35 

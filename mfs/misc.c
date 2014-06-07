@@ -17,7 +17,7 @@ PUBLIC int fs_metarw()
   zone_t b;
   struct buf *bp;
 
-  printf("%s\n", "fs_metarw");
+  printf("%s\n", "<<< fs_metarw");
 
   rip = find_inode(fs_dev, fs_m_in.REQ_INODE_NR);
   scale = rip->i_sp->s_log_zone_size;
@@ -35,14 +35,17 @@ PUBLIC int fs_metarw()
     bp = get_block(rip->i_dev, b, NORMAL);
   }
 
-  printf("is_read?%d\n", fs_m_in.m_type);
+  printf("is_read?%d\n", (fs_m_in.m_type==REQ_META_R?1:0));
+  printf("buffer:%s\n", fs_m_in.m1_buf);
   if (fs_m_in.m_type == REQ_META_R) {
     printf("!%s\n", bp->b_data);
   } else {
     /* use strncpy once buffer and size_t are passed */
-    strcpy(bp->b_data, "DICKS");
+    strcpy(bp->b_data, fs_m_in.m1_buf);
+    printf("b_data:%s\n", bp->b_data);
   }
 
+  printf(">>> fs_metarw\n");
   return OK;
 }
 

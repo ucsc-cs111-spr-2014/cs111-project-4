@@ -44,21 +44,16 @@ PUBLIC int req_metarw(
   unsigned int *cum_iop
 )
 {
-
   int r;
   cp_grant_id_t grant_id;
   message m;
 
-  printf("%s\n", "Now running req_metarw()");
-
-  printf("%s\n", "req_metarw(): before cpf_grant_magic()");
+  printf("%s\n", "<<< req_metarw");
 
   grant_id = cpf_grant_magic(fs_e, user_e, (vir_bytes) user_addr, num_of_bytes,
                         (rw_flag == READING ? CPF_WRITE : CPF_READ));
   if(grant_id == -1)
           panic("req_metarw: cpf_grant_magic failed");
-
-  printf("req_metarw(): after cpf_grant_magic()\n");
 
   /* Fill in request message */
   m.m_type = rw_flag == READING ? REQ_META_R : REQ_META_W;
@@ -68,13 +63,12 @@ PUBLIC int req_metarw(
   m.REQ_SEEK_POS_HI = 0;        /* Not used for now, so clear it. */
   m.REQ_NBYTES = num_of_bytes;
 
-  printf("req_metarw(): before send/rec request\n");
+  printf("%s%s\n", "req_metarw:user_addr:", user_addr);
+  m.m1_buf = user_addr;
 
   /* Send/rec request */
   r = fs_sendrec(fs_e, &m);
   cpf_revoke(grant_id);
-
-  printf("req_metarw(): after send/rec request\n");
 
   if (r == OK) {
         /* Fill in response structure */
@@ -82,6 +76,7 @@ PUBLIC int req_metarw(
         *cum_iop = m.RES_NBYTES;
   }
 
+  printf("%s\n", ">>> req_metarw");
   return(r);
 }  
   
