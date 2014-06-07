@@ -36,7 +36,7 @@ PUBLIC int fs_metarw()
   }
 
   printf("is_read?%d\n", fs_m_in.m_type);
-  if (fs_m_in.m_type/*is_read*/) {
+  if (fs_m_in.m_type == REQ_META_R) {
     printf("!%s\n", bp->b_data);
   } else {
     /* use strncpy once buffer and size_t are passed */

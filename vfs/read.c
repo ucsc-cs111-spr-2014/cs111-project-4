@@ -87,75 +87,23 @@ int rw_flag;                    /* READING or WRITING */
   r = OK;
   cum_io = 0;
 
-  if (vp->v_pipe == I_PIPE) {
-        printf("v_pipe == I_PIPE\n");
-        if (fp->fp_cum_io_partial != 0) {
-                panic("meta_read_write: fp_cum_io_partial not clear");
-        }
-       	return rw_pipe(rw_flag, who_e, m_in.fd, f, m_in.buffer, m_in.nbytes);
-  }
-
   op = (rw_flag == READING ? VFS_DEV_READ : VFS_DEV_WRITE);
   mode_word = vp->v_mode & I_TYPE;
   regular = mode_word == I_REGULAR;
 
-  if ((char_spec = (mode_word == I_CHAR_SPECIAL ? 1 : 0))) {
-        printf("char_spec\n");
-        if (vp->v_sdev == NO_DEV)
-                panic("meta_read_write tries to read from character device NO_DEV");
-  }
-
-   if ((block_spec = (mode_word == I_BLOCK_SPECIAL ? 1 : 0))) {
-        printf("block_spec\n");
-        if (vp->v_sdev == NO_DEV)
-                panic("meta_read_write tries to read from block device NO_DEV");
-  }
-
-  if (char_spec) {                      /* Character special files. */
-        dev_t dev;
-        int suspend_reopen;
-
-        printf("character special file\n");
-        suspend_reopen = (f->filp_state != FS_NORMAL);
-        dev = (dev_t) vp->v_sdev;
-
-        r = dev_io(op, dev, who_e, m_in.buffer, position, m_in.nbytes, oflags,
-                   suspend_reopen);
-        if (r >= 0) {
-                cum_io = r;
-                position = add64ul(position, r);
-                r = OK;
-        }
-  } else if (block_spec) {              /* Block special files. */
-        printf("block special file\n");
-        r = req_breadwrite(vp->v_bfs_e, who_e, vp->v_sdev, position,
-                m_in.nbytes, m_in.buffer, rw_flag, &res_pos, &res_cum_io);
-        if (r == OK) {
-                position = res_pos;
-                cum_io += res_cum_io;
-        } 
-  } else {                              /* Regular files */
-        printf("regular file\n");
-        if (rw_flag == WRITING && block_spec == 0) {
-                /* Check for O_APPEND flag. */
-                if (oflags & O_APPEND) position = cvul64(vp->v_size);
-        }
-
-        printf("");
 	/* Issue request */
-        printf("issuing request\n");
-        r = req_metarw(vp->v_fs_e, vp->v_inode_nr, position, rw_flag, who_e,
-                          m_in.buffer, m_in.nbytes, &new_pos, &cum_io_incr);
-        printf("request issued\n");
+  printf("issuing request\n");
+  r = req_metarw(vp->v_fs_e, vp->v_inode_nr, position, rw_flag, who_e,
+                    m_in.buffer, m_in.nbytes, &new_pos, &cum_io_incr);
+  printf("request issued\n");
+  if (r >= 0) {
+          if (ex64hi(new_pos))
+                  panic("meta_read_write: bad new pos");
 
-        if (r >= 0) {
-                if (ex64hi(new_pos))
-                        panic("meta_read_write: bad new pos");
-
-                position = new_pos;
-                cum_io += cum_io_incr;
-        }
+          position = new_pos;
+          cum_io += cum_io_incr;
   }
+
 
   /* On write, update file size and access time. */
   if (rw_flag == WRITING) {

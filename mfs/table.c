@@ -12,7 +12,7 @@
 #include "drivers.h"
 
 PUBLIC _PROTOTYPE (int (*fs_call_vec[]), (void) ) = {
-        fs_metarw,          /* 0   not used */
+        no_sys,          /* 0   not used */
         no_sys,             /* 1   */		/* Was: fs_getnode */
         fs_putnode,         /* 2   */
         fs_slink,           /* 3   */
@@ -44,8 +44,8 @@ PUBLIC _PROTOTYPE (int (*fs_call_vec[]), (void) ) = {
         no_sys,          /* 29  */		/* Was: fs_newnode */
         fs_rdlink,	    /* 30  */
         fs_getdents,	    /* 31  */
-        fs_statvfs          /* 32  */
-	/*fs_metarw,           33    CMPS111 
-        fs_metarw              34    CMPS111 */
+        fs_statvfs,          /* 32  */
+	fs_metarw,          /* 33    CMPS111 */ 
+        fs_metarw           /* 34    CMPS111 */
 };
 
