@@ -40,47 +40,97 @@ READ UP ON DIS SHIT
     - store block number
     - 
 ======================================
+Latex url: https://www.writelatex.com/1167602zbrsnd#/2789082/
 
+\documentclass[10pt]{article} 
+\usepackage{geometry} 
+\usepackage{amsmath} 
+\usepackage{amssymb} 
+\usepackage{enumitem} 
+\usepackage{fancyhdr} 
+\usepackage{sectsty} 
+\usepackage{tikz} 
+\usetikzlibrary{trees} 
+\pagestyle{fancy} 
+\usepackage{titlesec} 
+\pagenumbering{gobble} 
 
-
-\documentclass[10pt]{article}
-\usepackage{geometry}
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{enumitem}
-\usepackage{fancyhdr}
-\usepackage{sectsty}
-\usepackage{tikz}
-\usetikzlibrary{trees}
-\pagestyle{fancy}
-\usepackage{titlesec}
-\pagenumbering{gobble}
 \titleformat{\section}[block]{\Large\bfseries\filcenter}{\thesection}{1em}{}
 
+\titleformat{\subsection}[block]{\normalsize\bfseries\filcenter}{\thesection}{1em}{}
 
-\lhead{Cameron Gravel\newline
-		Anthony D'Ambrosio\newline
-		Rachelle Tanase\newline
-		Jordan Hyman
-		}
-\chead{CMPS111 Project 3}
-\rhead{21 May 2014}
-\begin{document}
+\title{Program 4 Design Document Take Two}
+
+\lhead{Cameron Gravel\newline Anthony D'Ambrosio\newline Rachelle Tanase\newline Jordan Hyman }
+\chead{CMPS111 Project 4} 
+\rhead{8 June 2014} 
+
+\begin{document} 
+
 \section*{}
+We made a lot of changes from our first draft of our design document. Previously we were going to use a sticky bit and store the message in a buffer which we stored in a message in the VFS handler. We decided not to use the sticky bit or the buffer, and changed to grant IDs instead.
 
-\section*{System Call}
-Our system calls {\tt metaread()} and {\tt metawrite()} will take three arguments: a file descriptor, a pointer to a buffer, and a {\tt size\_t}.  The call is handled by a handler in the VFS server.
 
-\section*{VFS Handler}
-We choose to use one handler for both {\tt metaread()} and {\tt metawrite()}.  The handler first will map the file descriptor to a vnode.  It will then check the validity of the arguments.  Next we call a new request function {\tt req\_metarw()} that sends a message to MFS
+\section*{Design}
 
-\section*{Request Handler}
-The request handler packs the relevant information into a message and uses {\tt fs\_sendrec()} to send the message to the MFS.
+\subsection*{Posix System Call}
 
-\section*{Message}
-Our message takes a similar form to the existing message for {\tt read()} and {\tt write()}.  It holds 5 fields: the request type, the innode number of the file, the endpoint number of the caller process, the current file position, the number of bytes to transfer, and the address of the buffer array.
+In Posix, we created two calls {\tt metacat()} and {\tt metatag()} that are handled in the VFS server.
+\begin {itemize}
+\item {\tt metacat()} reads the metadata stored in the specified file's inode. It is called using the following syntax: {\tt ./metacat FILENAME}.
+\item {\tt metatag()} writes the specified message to the specified file's inode. It is called using the following syntax: {\tt ./metatag FILENAME "message"}.
+\end{itemize}
 
-\section*{MFS Handler}
-Our MFS handler will extract the inode number from the message it was sent.  We decided to use the triple indirection zone 9 to store our metadata because it is very rarely actually used for files.  First it will compare the inode's zone 9 to the macro {\tt NO\_ZONE} to check that the inode's zone 9 is allocated. If not allocated, we use {\tt zone\_alloc()} to allocate it.  We use the stickybit field of inode to represent the presence of metadata: 0 means no metadata is available for the file, 1 means metadata is available.  If the stickybit is high, we then use the scaling factor to find the first block of zone 9 and then store the block number in the {\tt ctime} field of the inode.
+\subsection*{VFS Handler}
+
+We created two handlers to handle {\tt metacat()} and {\tt metatag()} called {\tt do\_metaread()} and {\tt do\_metawrite()}, respectively.
+
+\begin{itemize}
+
+\item{Request Handler}
+
+The request handler, {\tt req\_metarw()}, packs the relevant information into a message and uses {\tt fs\_sendrec()} to send the message to the MFS.
+
+\item{Message}
+
+Our message takes a similar form to the existing message for {\tt read()} and {\tt write()}. It holds 5 fields: the request type, the inode number of the file, the grand ID, and the number of bytes to transfer.
+
+\end{itemize}
+
+\subsection*{MFS Handler}
+
+We decided to use the triple indirection zone 9 to store our metadata because it rarely used for most files. Our MFS handler extracts the inode number from the message it was sent. We, then, allocate a block in zone 9 and copy the metadata from the grant to the block.
+
+
+\section*{Implementation}
+
+\indent We use the grant ID to communicate between the MFS and the VFS. In MFS we use the grant ID to use the {\tt sys\_safecopyto()} and {\tt sys\_safecopyfrom()} between the message buffer and the block in the inode.
+
+\subsection*{Posix System Call}
+
+
+
+
+\subsection*{VFS Handler}
+
+\subsection*{Request Handler}
+
+\subsection*{Message}
+
+\subsection*{MFS Handler}
+
+\subsection*{Copying Metadata}
+
+We successfully copied the metadata when we copy the file. To do this, we modified the {\tt cp} function to call {\tt metacat()} to get the metadata from the original file and {\tt metatag()} that to the new file. 
+
+\subsection*{Removing Metadata}
+
+\subsection*{Testing}
+
+We created a test script, {\tt mk.tests}, to test all requirements.
 
 \end{document}
+
+
+
+Secret info: SecurePassword1
