@@ -1,0 +1,11 @@
+#!/bin/sh
+
+#MIGHT BE INCORRECT, but implicit decl of meta[cat/tag] is normal. 
+
+cd /usr/src/lib/libc/
+#make includes #???
+make install 
+
+cd /usr/src/tools
+make includes #?
+make install 
