@@ -40,7 +40,7 @@ READ UP ON DIS SHIT
     - store block number
     - 
 ======================================
-
+Latex url: https://www.writelatex.com/1167602zbrsnd#/2789082/
 
 \documentclass[10pt]{article} 
 \usepackage{geometry} 
