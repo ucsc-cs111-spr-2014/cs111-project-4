@@ -39,12 +39,12 @@ PUBLIC int do_metarw()
 
   if (is_read) {
     printf("meta_read_write->READING\n");
-    m_in.nbytes = 0;
+    m_in.nbytes = -1;
     return(meta_read_write(READING)); 
   } else {
     m_in.nbytes = m_in.m1_i2;
+    m_in.buffer = m_in.m1_p1;
     printf("meta_read_write->WRITING\n");
-    printf("%s%s\n", "buffer:", m_in.m1_buf);
     return(meta_read_write(WRITING));
   }
   
@@ -69,7 +69,7 @@ int rw_flag;                    /* READING or WRITING */
   printf("<<< meta_read_write\n");
 
   /* If the file descriptor is valid, get the vnode, size and mode. */
-  if (m_in.nbytes < 0) return(EINVAL);
+  if (m_in.nbytes < -1) return(EINVAL);
   if ((f = get_filp(m_in.fd)) == NULL) return(err_code);
   if (((f->filp_mode) & (rw_flag == READING ? R_BIT : W_BIT)) == 0) {
     return(f->filp_mode == FILP_CLOSED ? EIO : EBADF);
@@ -90,15 +90,10 @@ int rw_flag;                    /* READING or WRITING */
   regular = mode_word == I_REGULAR;
 
   /* Issue request */
-  printf("%s%s\n", "m_in.buffer:", m_in.m1_buf);
   r = req_metarw(vp->v_fs_e, vp->v_inode_nr, position, rw_flag, who_e,
-                    m_in.m1_buf, m_in.nbytes, &new_pos, &cum_io_incr);
+                    m_in.buffer, m_in.nbytes, &new_pos, &cum_io_incr);
   if (r >= 0) {
-    if (ex64hi(new_pos))
-      panic("meta_read_write: bad new pos");
-
-    position = new_pos;
-    cum_io += cum_io_incr;
+    printf("%s%s\n", "meta_read_write:", "ERROR: r >= 0");
   }
 
 

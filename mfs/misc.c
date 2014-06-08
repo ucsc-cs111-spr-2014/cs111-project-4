@@ -16,9 +16,12 @@ PUBLIC int fs_metarw()
   short scale;
   zone_t b;
   struct buf *bp;
+  off_t position;
+  cp_grant_id_t gid;
 
   printf("%s\n", "<<< fs_metarw");
 
+  gid = (cp_grant_id_t) fs_m_in.REQ_GRANT;
   rip = find_inode(fs_dev, fs_m_in.REQ_INODE_NR);
   scale = rip->i_sp->s_log_zone_size;
 
@@ -36,13 +39,16 @@ PUBLIC int fs_metarw()
   }
 
   printf("is_read?%d\n", (fs_m_in.m_type==REQ_META_R?1:0));
-  printf("buffer:%s\n", fs_m_in.m1_buf);
   if (fs_m_in.m_type == REQ_META_R) {
-    printf("!%s\n", bp->b_data);
+    printf("b_data:%s\n", bp->b_data);
+    sys_safecopyto(VFS_PROC_NR, gid, (vir_bytes) 0, (vir_bytes) bp->b_data,
+                 1024, D); /* bp->b_data;*/
   } else {
     /* use strncpy once buffer and size_t are passed */
-    strcpy(bp->b_data, fs_m_in.m1_buf);
+    sys_safecopyfrom(VFS_PROC_NR, gid, (vir_bytes) 0, (vir_bytes) bp->b_data,
+                       1024, D);
     printf("b_data:%s\n", bp->b_data);
+    bp->b_dirt = DIRTY;
   }
 
   printf(">>> fs_metarw\n");

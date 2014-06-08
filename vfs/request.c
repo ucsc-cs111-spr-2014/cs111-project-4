@@ -47,6 +47,7 @@ PUBLIC int req_metarw(
   int r;
   cp_grant_id_t grant_id;
   message m;
+  char *buffy;
 
   printf("%s\n", "<<< req_metarw");
 
@@ -63,19 +64,18 @@ PUBLIC int req_metarw(
   m.REQ_SEEK_POS_HI = 0;        /* Not used for now, so clear it. */
   m.REQ_NBYTES = num_of_bytes;
 
-  printf("%s%s\n", "req_metarw:user_addr:", user_addr);
-  m.m1_buf = user_addr;
-
   /* Send/rec request */
   r = fs_sendrec(fs_e, &m);
-  cpf_revoke(grant_id);
 
-  if (r == OK) {
-        /* Fill in response structure */
-        *new_posp = cvul64(m.RES_SEEK_POS_LO);
-        *cum_iop = m.RES_NBYTES;
+  sys_safecopyfrom(MFS_PROC_NR, grant_id, (vir_bytes) 0, (vir_bytes) buffy,
+                       1024, D); 
+  printf("%s%s\n", "req_metarw", buffy); 
+
+  if (r == OK && rw_flag == READING) {
+    /* Fill in response structure */
   }
 
+  cpf_revoke(grant_id);
   printf("%s\n", ">>> req_metarw");
   return(r);
 }  
