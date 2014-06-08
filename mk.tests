@@ -3,7 +3,8 @@
 ################################################################################
 #FUNCTIONS
 pause() {
-	read -p "=================== Press [Enter] to continue ==================="
+	echo "=================== Press [Enter] to continue ==================="
+	read frak
 }
 
 
@@ -88,17 +89,17 @@ echo "TESTING FOR MEMORY LEAKS"
 echo "Initial free space"
 df
 
-echo "Creating and deleting 1000 files with metadata"
-max = 1000
-for ((i= 0; i<$max;i++));
-do
-	echo "stuff" > file.txt
-	./metatag file.txt "new tag"
-	rm file.txt
-done
-
-echo "Ending free space"
-df
+#echo "Creating and deleting 1000 files with metadata"
+#max = 1000
+#for ((i= 0; i<$max;i++));
+#do#
+#	echo "stuff" > file.txt
+#	./metatag file.txt "new tag"
+#	rm file.txt
+#done
+#
+#echo "Ending free space"
+#df
 
 pause
 

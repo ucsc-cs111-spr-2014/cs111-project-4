@@ -49,8 +49,6 @@ PUBLIC int req_metarw(
   message m;
   char *buffy;
 
-  printf("%s\n", "<<< req_metarw");
-
   grant_id = cpf_grant_magic(fs_e, user_e, (vir_bytes) user_addr, num_of_bytes,
                         (rw_flag == READING ? CPF_WRITE : CPF_READ));
   if(grant_id == -1)
@@ -60,23 +58,19 @@ PUBLIC int req_metarw(
   m.m_type = rw_flag == READING ? REQ_META_R : REQ_META_W;
   m.REQ_INODE_NR = inode_nr;
   m.REQ_GRANT = grant_id;
-  m.REQ_SEEK_POS_LO = ex64lo(pos);
-  m.REQ_SEEK_POS_HI = 0;        /* Not used for now, so clear it. */
   m.REQ_NBYTES = num_of_bytes;
 
   /* Send/rec request */
   r = fs_sendrec(fs_e, &m);
+  cpf_revoke(grant_id);
 
-  sys_safecopyfrom(MFS_PROC_NR, grant_id, (vir_bytes) 0, (vir_bytes) buffy,
-                       1024, D); 
-  printf("%s%s\n", "req_metarw", buffy); 
-
-  if (r == OK && rw_flag == READING) {
+  /*printf("%s:r:%d\n", "req_metarw", r);*/
+  if (r == OK && rw_flag == REQ_META_R) {
     /* Fill in response structure */
+      /*printf("%s:user_addr:%s\n", "req_metarw", user_addr);*/
   }
 
-  cpf_revoke(grant_id);
-  printf("%s\n", ">>> req_metarw");
+  /*printf("%s\n", ">>> req_metarw");*/
   return(r);
 }  
   

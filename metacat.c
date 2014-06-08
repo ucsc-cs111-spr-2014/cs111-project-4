@@ -1,20 +1,23 @@
+#include <unistd.h> /*MUST BE FIRST*/
 #include <lib.h>
-#include <sys/cdefs.h>
+#include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <fcntl.h>
+#include <assert.h>
 
 /*
 metacat FILE, prints metadata of FILE to stdout
 */
 int main(int argc, char *argv[])
 {
-	int ret;
-	message m;
+	int r; int fd;
+	char buffer[1024];
 
-	m.m1_i1 = 1; /*contains flag (isRead) for read or write*/
-	m.m1_i3 = fileno(fopen(argv[1], "r")); /*contains filename*/
+	fd = open(argv[1], O_RDONLY); /*contains filename*/
+	r = metacat(fd, buffer, 1024);
 
-	ret = _syscall(VFS_PROC_NR, 69, &m);
-	printf("ret: %d\n", ret);
+	printf("%s:%s\n", "metadata:", buffer);
 
-	return 0;
+	return r;
 }
