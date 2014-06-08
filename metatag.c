@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 	r = metatag(fd, argv[2], strlen(argv[2]));
 
 	/*printf("%s%s\n", "r:", r);*/
-	printf("%s:%s\n", "metadata:", argv[2]);
+	printf("%s:%s\n", "metadata", argv[2]);
 
 	return 0;
 }

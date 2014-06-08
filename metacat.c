@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 	fd = open(argv[1], O_RDONLY); /*contains filename*/
 	r = metacat(fd, buffer, 1024);
 
-	printf("%s:%s\n", "metadata:", buffer);
+	printf("%s:%s\n", "metadata", buffer);
 
 	return r;
 }

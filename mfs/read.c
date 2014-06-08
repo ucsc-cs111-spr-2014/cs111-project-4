@@ -61,16 +61,13 @@ cp_grant_id_t gid;    /* grant */
     panic("bp not valid in rw_chunk; this can't happen");
 
   if (rw_flag == READING) {
-    printf("%s%s%s\n", "meta_rw_chunk:", "bp->b_data:", bp->b_data);
-    /* Copy b_data from the block buffer to user space. */
     r = sys_safecopyto(VFS_PROC_NR, gid, (vir_bytes) 0,
            (vir_bytes) bp->b_data, (size_t) nrbytes, D);
   } else {
-    /* Copy b_data from user space to the block buffer. */
+    zero_block(bp);
     r = sys_safecopyfrom(VFS_PROC_NR, gid, (vir_bytes) 0,
              (vir_bytes) bp->b_data, (size_t) nrbytes, D);
     bp->b_dirt = DIRTY;
-    printf("%s%s%s\n", "meta_rw_chunk:", "bp->b_data:", bp->b_data);
   }
   
   n = FULL_DATA_BLOCK;

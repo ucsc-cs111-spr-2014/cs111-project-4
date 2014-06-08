@@ -80,57 +80,9 @@ int rw_flag;                    /* READING or WRITING */
   mode_word = vp->v_mode & I_TYPE;
   regular = mode_word == I_REGULAR;
 
-  if ((char_spec = (mode_word == I_CHAR_SPECIAL ? 1 : 0))) {
-  if (vp->v_sdev == NO_DEV)
-    panic("read_write tries to read from character device NO_DEV");
-  }
-
-  if ((block_spec = (mode_word == I_BLOCK_SPECIAL ? 1 : 0))) {
-    if (vp->v_sdev == NO_DEV)
-      panic("read_write tries to read from block device NO_DEV");
-  }
-
-
-  if (char_spec) {      /* Character special files. */
-    dev_t dev;
-    int suspend_reopen;
-
-    suspend_reopen = (f->filp_state != FS_NORMAL);
-    dev = (dev_t) vp->v_sdev;
-
-    r = dev_io(op, dev, who_e, m_in.buffer, position, m_in.nbytes, oflags,
-         suspend_reopen);
-    if (r >= 0) {
-      cum_io = r;
-      position = add64ul(position, r);
-      r = OK;
-    }
-  } else if (block_spec) {    /* Block special files. */
-    r = req_breadwrite(vp->v_bfs_e, who_e, vp->v_sdev, position,
-    m_in.nbytes, m_in.buffer, rw_flag, &res_pos, &res_cum_io);
-    if (r == OK) {
-      position = res_pos;
-      cum_io += res_cum_io;
-    }
-  } else {        /* Regular files */
-    if (rw_flag == WRITING && block_spec == 0) {
-      /* Check for O_APPEND flag. */
-      if (oflags & O_APPEND) 
-        position = cvul64(vp->v_size);
-    }
-
     /* Issue request */
     r = req_metarw(vp->v_fs_e, vp->v_inode_nr, position, rw_flag, who_e,
           m_in.buffer, m_in.nbytes, &new_pos, &cum_io_incr);
-
-    /*if (r >= 0) {
-      if (ex64hi(new_pos))
-        panic("read_write: bad new pos");
-
-      position = new_pos;
-      cum_io += cum_io_incr;
-    }*/
-  }
 
   /* On write, update file size and access time. */
   if (rw_flag == WRITING) {

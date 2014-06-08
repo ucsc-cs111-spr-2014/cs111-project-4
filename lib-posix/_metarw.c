@@ -11,7 +11,7 @@ PUBLIC int metacat(int fd, void *buffer, size_t nbytes) {
 	return(_syscall(VFS_PROC_NR, 69, &m));
 }
 
-PUBLIC int metatag(int fd, _CONST void *buffer, size_t nbytes{
+PUBLIC int metatag(int fd, _CONST void *buffer, size_t nbytes) {
 	message m;
 
 	m.m1_i1 = fd;
