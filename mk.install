@@ -8,4 +8,7 @@ make install
 
 cd /usr/src/tools
 make includes #?
-make install 
+make install
+
+cd /usr/src/commands
+make install

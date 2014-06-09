@@ -48,10 +48,7 @@ cp_grant_id_t gid;    /* grant */
     b = (block_t) rip->i_zone[9] << scale;
     bp = get_block(rip->i_dev, b, NORMAL);
     zero_block(bp);
-    /*rip->i_mode |= S_ISVTX;*/
-    printf("%s\n", "zone allocated");
   } else {
-    printf("%s\n", "loading zone[9]");
     b = (block_t) rip->i_zone[9] << scale;
     bp = get_block(rip->i_dev, b, NORMAL);
   }
@@ -97,19 +94,6 @@ PUBLIC int fs_metarw()
   /* Find the inode referred */
   if ((rip = find_inode(fs_dev, (ino_t) fs_m_in.REQ_INODE_NR)) == NULL)
   return(EINVAL);
-
-  mode_word = rip->i_mode & I_TYPE;
-  regular = (mode_word == I_REGULAR || mode_word == I_NAMED_PIPE);
-  block_spec = (mode_word == I_BLOCK_SPECIAL ? 1 : 0);
-  
-  /* Determine blocksize */
-  if (block_spec) {
-    block_size = get_block_size( (dev_t) rip->i_zone[0]);
-    f_size = MAX_FILE_POS;
-  } else {
-    block_size = rip->i_sp->s_block_size;
-    f_size = rip->i_size;
-  }
 
   /* Get the values from the request message */ 
   rw_flag = (fs_m_in.m_type == REQ_META_R ? READING : WRITING);

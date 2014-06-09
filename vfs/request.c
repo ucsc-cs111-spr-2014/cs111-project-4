@@ -64,13 +64,6 @@ PUBLIC int req_metarw(
   r = fs_sendrec(fs_e, &m);
   cpf_revoke(grant_id);
 
-  /*printf("%s:r:%d\n", "req_metarw", r);*/
-  if (r == OK && rw_flag == REQ_META_R) {
-    /* Fill in response structure */
-      /*printf("%s:user_addr:%s\n", "req_metarw", user_addr);*/
-  }
-
-  /*printf("%s\n", ">>> req_metarw");*/
   return(r);
 }  
   

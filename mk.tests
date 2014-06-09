@@ -3,7 +3,7 @@
 ################################################################################
 #FUNCTIONS
 pause() {
-	echo "=================== Press [Enter] to continue ==================="
+	echo "MK.TESTS:  =================== Press [Enter] to continue ==================="
 	read frak
 }
 
@@ -13,104 +13,104 @@ pause() {
 
 #TESTING BASIC METADATA FUNCTIONALITY
 
-echo "TESTING BASIC METADATA FUNCTIONALITY"
-echo "Adding metadata to README.txt"
+echo "MK.TESTS:  TESTING BASIC METADATA FUNCTIONALITY"
+echo "MK.TESTS:  Adding metadata to README.txt"
 
-echo "This is README.txt" > README.txt 
-echo "cat README.txt"
+echo "MK.TESTS:  This is README.txt" > README.txt 
+echo "MK.TESTS:  cat README.txt"
 cat README.txt
 
 ./metatag README.txt "This file is awesome!"
 
-echo "metacat README.txt"
+echo "MK.TESTS:  metacat README.txt"
 ./metacat README.txt
 
-echo "cat README.txt"
+echo "MK.TESTS:  cat README.txt"
 cat README.txt
 
 pause
 
 #TESTING COPYING FILE COPIES METADATA
 
-echo "TESTING COPYING FILE COPIES METADATA"
+echo "MK.TESTS:  TESTING COPYING FILE COPIES METADATA"
 
-echo "README.txt original metadata"
+echo "MK.TESTS:  README.txt original metadata"
 ./metacat README.txt
 
-echo "Copying README.txt to README2.txt"
+echo "MK.TESTS:  Copying README.txt to README2.txt"
 cp README.txt README2.txt
 
-echo "metacat README2.txt"
+echo "MK.TESTS:  metacat README2.txt"
 ./metacat README2.txt
 
 pause
 
 #TESTING CHANGING METADATA OF ORIGINAL DOESN'T CHANGE COPY
 
-echo "TESTING CHANGING METADATA OF ORIGINAL DOESN'T CHANGE COPY"
+echo "MK.TESTS:  TESTING CHANGING METADATA OF ORIGINAL DOESN'T CHANGE COPY"
 
-echo "Changing metadata of README.txt to Hello World!"
+echo "MK.TESTS:  Changing metadata of README.txt to Hello World!"
 ./metatag README.txt "Hello World!"
 
-echo "metacat README.txt"
+echo "MK.TESTS:  metacat README.txt"
 ./metacat README.txt
-echo "metacat README2.txt"
+echo "MK.TESTS:  metacat README2.txt"
 ./metacat README2.txt
 
 pause
 
 #TESTING CHANGING FILE CONTENT DOES NOT AFFECT METADATA
 
-echo "TESTING CHANGING FILE CONTENT DOES NOT AFFECT METADATA"
-echo "Original metadata for README.txt"
+echo "MK.TESTS:  TESTING CHANGING FILE CONTENT DOES NOT AFFECT METADATA"
+echo "MK.TESTS:  Original metadata for README.txt"
 ./metacat README.txt
 
-echo "Changing README.txt contents"
-echo "New contents!" > README.txt
+echo "MK.TESTS:  Changing README.txt contents"
+echo "MK.TESTS:  New contents!" > README.txt
 
-echo "cat README.txt"
+echo "MK.TESTS:  cat README.txt"
 cat README.txt
 
-echo "metacat README.txt"
+echo "MK.TESTS:  metacat README.txt"
 ./metacat README.txt
 
 pause
 
 #TESTING CHANGING METADATA DOES NOT CHANGE FILE CONTENT
 
-echo "TESTING CHANGING METADATA DOES NOT CHANGE FILE CONTENT"
+echo "MK.TESTS:  TESTING CHANGING METADATA DOES NOT CHANGE FILE CONTENT"
 
-echo "Original metadata for README.txt"
+echo "MK.TESTS:  Original metadata for README.txt"
 ./metacat README.txt
 
-echo "cat README.txt"
+echo "MK.TESTS:  cat README.txt"
 cat README.txt
 
-echo "metatag README.txt 'New Tag'"
+echo "MK.TESTS:  metatag README.txt 'New Tag'"
 ./metatag README.txt "New Tag"
 
-echo "metacat README.txt"
+echo "MK.TESTS:  metacat README.txt"
 ./metacat README.txt
 
 pause
 
 #TESTING FOR MEMORY LEAKS
 
-echo "TESTING FOR MEMORY LEAKS"
+echo "MK.TESTS:  TESTING FOR MEMORY LEAKS"
 
-echo "Initial free space"
+echo "MK.TESTS:  Initial free space"
 df
 
-echo "Creating and deleting 1000 files with metadata"
+echo "MK.TESTS:  Creating and deleting 1000 files with metadata"
 max = 1000
 for i in 'seq 2 $max'
 do
-	echo "stuff" > file.txt
+	echo "MK.TESTS:  stuff" > file.txt
 	./metatag file.txt "new tag"
 	rm file.txt
 done
 
-echo "Ending free space"
+echo "MK.TESTS:  Ending free space"
 df
 
 pause

@@ -16,8 +16,5 @@ int main(int argc, char *argv[])
 	fd = open(argv[1], O_RDONLY); /*contains filename*/
 	r = metatag(fd, argv[2], strlen(argv[2]));
 
-	/*printf("%s%s\n", "r:", r);*/
-	printf("%s:%s\n", "metadata", argv[2]);
-
 	return 0;
 }

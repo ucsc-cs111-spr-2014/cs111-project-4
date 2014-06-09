@@ -30,13 +30,11 @@
  *===========================================================================*/
 PUBLIC int do_metaread()
 {
-  printf("<<< do_metaread\n");
   return(meta_read_write(READING)); 
 }
 
 PUBLIC int do_metawrite()
 {
-  printf("<<< do_metawrite\n");
   return(meta_read_write(WRITING));
 }
 
@@ -61,43 +59,17 @@ int rw_flag;                    /* READING or WRITING */
     return(err_code);
 
   if (m_in.nbytes == 0)
-    return(0);  /* so char special files need not check for 0*/
+    return(0);  
 
   position = f->filp_pos;
   oflags = f->filp_flags;
   vp = f->filp_vno;
   r = OK;
-  cum_io = 0;
 
-  if (vp->v_pipe == I_PIPE) {
-    if (fp->fp_cum_io_partial != 0) {
-      panic("read_write: fp_cum_io_partial not clear");
-    }
-    return rw_pipe(rw_flag, who_e, m_in.fd, f, m_in.buffer, m_in.nbytes);
-  }
-
-  op = (rw_flag == READING ? VFS_DEV_READ : VFS_DEV_WRITE);
-  mode_word = vp->v_mode & I_TYPE;
-  regular = mode_word == I_REGULAR;
-
-    /* Issue request */
-    r = req_metarw(vp->v_fs_e, vp->v_inode_nr, position, rw_flag, who_e,
+  /* Issue request */
+  r = req_metarw(vp->v_fs_e, vp->v_inode_nr, position, rw_flag, who_e,
           m_in.buffer, m_in.nbytes, &new_pos, &cum_io_incr);
 
-  /* On write, update file size and access time. */
-  if (rw_flag == WRITING) {
-  if (regular || mode_word == I_DIRECTORY) {
-    if (cmp64ul(position, vp->v_size) > 0) {
-      if (ex64hi(position) != 0) {
-        panic("read_write: file size too big ");
-      }
-      vp->v_size = ex64lo(position);
-    }
-  }
-  }
-
-  f->filp_pos = position;
-  if (r == OK) return(cum_io);
   return(r);
 }
 
