@@ -1,0 +1,29 @@
+Build and run instructions
+
+move all provided files as follows
+cp/cp.c				/usr/src/commands/cp/cp.c
+ext2/table.c			/usr/src/servers/ext2/table.c
+hgfs/table.c			/usr/src/servers/hgfs/table.c
+include-minix/ipc.h		/usr/src/include/minix/ipc.h
+include-minix/vfsif.h		/usr/src/include/minix/vfsif.h
+lib-posix/Makefile.inc		/usr/src/lib/libc/posix/Makefile.inc
+lib-posix/_metarw.c		/usr/src/lib/libc/posix/_metarw.c
+mfs/proto.h			/usr/src/servers/mfs/proto.h
+mfs/read.c			/usr/src/servers/mfs/read.c
+mfs/table.c			/usr/src/servers/mfs/table.c
+pfs/table.c			/usr/src/servers/pfs/table.c
+vfs/proto.h			/usr/src/servers/vfs/proto.h
+vfs/read.c			/usr/src/servers/vfs/read.c
+vfs/request.c			/usr/src/servers/vfs/request.c
+vfs/table.c			/usr/src/servers/vfs/table.c
+test/metacat.c			your choice
+test/metatag.c			your choice
+test/mk.build			your choice
+test/mk.install			your choice
+test/mk.tests
+
+run ./mk.build
+run ./mk.install
+run ./mk.tests
+
+press enter multiple times to run through the test
