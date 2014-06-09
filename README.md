@@ -41,7 +41,6 @@ READ UP ON DIS SHIT
     - 
 ======================================
 Latex url: https://www.writelatex.com/1167602zbrsnd#/2789082/
-
 \documentclass[10pt]{article} 
 \usepackage{geometry} 
 \usepackage{amsmath} 
@@ -68,66 +67,53 @@ Latex url: https://www.writelatex.com/1167602zbrsnd#/2789082/
 \begin{document} 
 
 \section*{}
-We made a lot of changes from our first draft of our design document. Previously we were going to use a sticky bit and store the message in a buffer which we stored in a message in the VFS handler. We decided not to use the sticky bit or the buffer, and changed to grant IDs instead.
-
 
 \section*{Design}
 
-\subsection*{Posix System Call}
+\subsection*{Posix Library Functions}
 
-In Posix, we created two calls {\tt metacat()} and {\tt metatag()} that are handled in the VFS server.
+In Posix, we created two functions {\tt metacat()} and {\tt metatag()} that sys call do_metacat and do_metatag.
 \begin {itemize}
-\item {\tt metacat()} reads the metadata stored in the specified file's inode. It is called using the following syntax: {\tt ./metacat FILENAME}.
-\item {\tt metatag()} writes the specified message to the specified file's inode. It is called using the following syntax: {\tt ./metatag FILENAME "message"}.
+\item {\tt metacat()} reads the metadata stored in the specified file's inode. 
+\item {\tt metatag()} writes the specified message to the specified file's inode. 
 \end{itemize}
 
 \subsection*{VFS Handler}
 
-We created two handlers to handle {\tt metacat()} and {\tt metatag()} called {\tt do\_metaread()} and {\tt do\_metawrite()}, respectively.
+We created two VFS sys call handlers to handle {\tt metacat()} and {\tt metatag()}, called {\tt do\_metaread()} and {\tt do\_metawrite()}, respectively.
 
 \begin{itemize}
-
-\item{Request Handler}
-
-The request handler, {\tt req\_metarw()}, packs the relevant information into a message and uses {\tt fs\_sendrec()} to send the message to the MFS.
-
-\item{Message}
-
-Our message takes a similar form to the existing message for {\tt read()} and {\tt write()}. It holds 5 fields: the request type, the inode number of the file, the grand ID, and the number of bytes to transfer.
-
+\item{Request} The request function, {\tt req\_metarw()}, opens a grant to communicate with MFS. It then packs the relevant information into a message and sends the message to the MFS.
+\item{Message} Our message takes a similar form to the existing message for {\tt read()} and {\tt write()}. It holds 4 fields: the request type, the inode number of the file, the grand ID, and the number of bytes to transfer.
 \end{itemize}
 
 \subsection*{MFS Handler}
-
-We decided to use the triple indirection zone 9 to store our metadata because it rarely used for most files. Our MFS handler extracts the inode number from the message it was sent. We, then, allocate a block in zone 9 and copy the metadata from the grant to the block.
+We decided to use the triple indirection zone 9 to store our metadata because it rarely used for most files. Our MFS handler allocates a block in zone 9 in the inode if it is not already allocated, then reads or writes to the block as requested.
 
 
 \section*{Implementation}
 
-\indent We use the grant ID to communicate between the MFS and the VFS. In MFS we use the grant ID to use the {\tt sys\_safecopyto()} and {\tt sys\_safecopyfrom()} between the message buffer and the block in the inode.
-
-\subsection*{Posix System Call}
-
-
-
+\subsection*{Posix Library Functions and System Calls}
+We changed two entries of the  VFS call table:  {\tt do\_metaread()} in entry 69 and {\tt do\_meatwrite()} in entry 70.  These tell the system (ie sys calls) which functions will handle the system calls sent from {\tt metacat()} and {\tt metatag()}.  The {\tt metacat()} and {\tt metatag()} library functions are in {\tt \_metarw.c} in {\tt lib/libc/posix}.  They both take a file descriptor, number of bytes, and buffer pointer as arguments.  They pack the arguments into a message, and then call {\tt \_syscall()} with their respective call table entries.
 
 \subsection*{VFS Handler}
+In {\tt servers/vfs/read.c}, {\tt do\_metaread()} and {\tt do\_metawrite()} are our system call handlers.  They each call {\tt meta\_read\_write()} and pass in an argument that represents their intention to read or write.  {\tt meta\_read\_write()} checks validity of the arguments for our request function, {\tt req\_metarw()}, and then calls that request.
 
 \subsection*{Request Handler}
-
-\subsection*{Message}
+In {\tt servers/vfs/request.c}, {\tt req\_metarw()} first calls {\tt cpf\_grant\_magic()} to set up a grant to transfer data between the user space and MFS.  It then populates a message with the inode number of the file, the grand ID, and the number of bytes.  Finally it uses {\tt fs\_sendrec()} to send the request to the MFS.
 
 \subsection*{MFS Handler}
+We first needed to add two calls to the MFS call table.  We added {\tt fs\_metarw()} to entries 33 and 34.  We also had to add a $34^{th}$ and $35^{th}$ entry to each other filesystem server (ext2, hgfs, pfs).  The new entries in the extra filesystems are left as {\tt no\_sys}.  In {\tt fs\_metarw()} we first find the inode of the desired file.  Then it determines the block size of the inode and store the values sent in with the request message.  Finally, it calls {\tt meta\_rw\_chunk()}, which handles the actual reading and writing.  {\tt meta\_rw\_chunk()} first allocates zone 9 of the inode if it has not been allocated yet, otherwise it just accesses i_zone[9] scaled by s_log_zone_size (found in the super block).  Next, it uses {\tt sys\_safecopyfrom()} to write from the grant to the inode block, or {\tt sys\_safecopyto()} to read from the inode block to the grant.  If we wrote metadata, we first zero the block (zero_block) so that any old data will not be re-used, and then we mark the block dirty before calling {\tt put\_block()} and returning.
 
-\subsection*{Copying Metadata}
+\subsection*{Copy}
+In {\tt /usr/src/commands/cp}, {\tt cp.c} holds the minix implementation for copying a file.  In {\tt copy()}, after the file contents have been copied, we call {\tt metacat()} on the original file to get the metadata associated with it.  We then {\tt metatag()} that data onto the new copy.
 
-We successfully copied the metadata when we copy the file. To do this, we modified the {\tt cp} function to call {\tt metacat()} to get the metadata from the original file and {\tt metatag()} that to the new file. 
+\section*{Testing}
 
-\subsection*{Removing Metadata}
+We created a test script, {\tt mk.tests}, to test all requirements.  Running {\tt ./mk.tests} will cause all tests to run.  First we  add metadata to a file and {\tt metacat()} it to the screen. Then we copy that file to a new file and affirm that the metadata remains the same in both files.  Next we change the metadata of the original file and affirm that the new file's metadata remains unchanged.  Next we change the content of a file and affirm the metadata associated with it does not change.  Then we check that changing the metadata does not change the file contents.  Finally we create 1000 files with metadata and remove them, and affirm that we have no memory leaks.
 
-\subsection*{Testing}
-
-We created a test script, {\tt mk.tests}, to test all requirements.
+\subsection*{Results}
+All tests run as expected except removing the metadata, which shows a 4kB memory leak per file removed.
 
 \end{document}
 
